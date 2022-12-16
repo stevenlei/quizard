@@ -121,7 +121,7 @@ export default function Home() {
           {isLoading && <div className="flex justify-center items-center mt-8">{loadingIcon()}</div>}
           {!isLoading && quizzes.length === 0 && (
             <div className="flex justify-center items-center py-32 text-gray-800">
-              No Quizzes yet, let's create a new one.
+              No Quizzes yet, let&apos;s create a new one.
             </div>
           )}
           {!isLoading && quizzes.length > 0 && (
