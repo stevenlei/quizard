@@ -99,6 +99,9 @@ export default function Home() {
       const quizardTeacher = quizardReceipt.events[0].args.teacher;
 
       console.log(`Quizard created at ${quizardContractAddress} by ${quizardTeacher}`);
+
+      // Redirect to the quiz page
+      router.push(`/dashboard/quiz/view/${quizardContractAddress}`);
     } catch (error) {
       console.error(error);
     } finally {

@@ -3,18 +3,78 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 import { useRouter } from "next/router";
+import FACTORY_ABI from "../../contracts/QuizardFactory.json";
+import QUIZARD_ABI from "../../contracts/Quizard.json";
+import MANAGER_ABI from "../../contracts/QuizardManager.json";
+import { ethers } from "ethers";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [quizzes, setQuizzes] = useState([]);
+
   useEffect(() => {
     if (router.isReady && !isConnected) {
       // Redirect to homepage
       router.push("/");
+    } else if (router.isReady && isConnected) {
+      init();
+      console.log("init");
     }
   }, [isConnected, router.isReady]);
+
+  const init = async () => {
+    const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_QUIZARD_JSON_API_PROVIDER_URL);
+    const managerContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_QUIZARD_MANAGER_ADDRESS,
+      MANAGER_ABI.abi,
+      provider
+    );
+
+    try {
+      const quizardAddresses = await managerContract.getQuizardsByTeacher(address);
+
+      if (quizardAddresses.length > 0) {
+        for (let i = 0; i < quizardAddresses.length; i++) {
+          const quizardContract = new ethers.Contract(quizardAddresses[i], QUIZARD_ABI.abi, provider);
+          const name = await quizardContract.getName();
+          const questions = await quizardContract.getQuestions();
+
+          setQuizzes((prev) => [
+            ...prev,
+            {
+              address: quizardAddresses[i],
+              name: name,
+              questions: questions,
+            },
+          ]);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadingIcon = () => (
+    <svg
+      className="animate-spin h-6 w-6 text-gray-500 mx-2"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -57,72 +117,39 @@ export default function Home() {
             </li>
           </ul>
 
-          <div className="mt-8">
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-              <ul>
-                <li>
-                  <Link href="/dashboard/quiz/view/0x000000" className="block hover:bg-gray-50">
-                    <div className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <p className="text-lg font-medium text-gray-900 truncate">Quiz 1</p>
-                        <div className="ml-2 flex-shrink-0 flex gap-x-2">
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            3 Questions
-                          </p>
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Passing Score: 60
-                          </p>
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Submitted: 2
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard/quiz/view/0x000000" className="block hover:bg-gray-50">
-                    <div className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <p className="text-lg font-medium text-gray-900 truncate">Quiz 1</p>
-                        <div className="ml-2 flex-shrink-0 flex gap-x-2">
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            3 Questions
-                          </p>
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Passing Score: 60
-                          </p>
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Submitted: 2
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard/quiz/view/0x000000" className="block hover:bg-gray-50">
-                    <div className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <p className="text-lg font-medium text-gray-900 truncate">Quiz 1</p>
-                        <div className="ml-2 flex-shrink-0 flex gap-x-2">
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            3 Questions
-                          </p>
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Passing Score: 60
-                          </p>
-                          <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Submitted: 2
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              </ul>
+          {isLoading && <div className="flex justify-center items-center mt-8">{loadingIcon()}</div>}
+          {!isLoading && quizzes.length === 0 && (
+            <div className="flex justify-center items-center py-32 text-gray-800">
+              No Quizzes yet, let's create a new one.
             </div>
-          </div>
+          )}
+          {!isLoading && quizzes.length > 0 && (
+            <div className="mt-8">
+              <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                <ul>
+                  {quizzes.map((quiz, quizIndex) => (
+                    <li key={quizIndex}>
+                      <Link href={`/dashboard/quiz/view/${quiz.address}`} className="block hover:bg-gray-50">
+                        <div className="px-4 py-4 sm:px-6">
+                          <div className="flex items-center justify-between">
+                            <p className="text-lg font-medium text-gray-900 truncate">{quiz.name}</p>
+                            <div className="ml-2 flex-shrink-0 flex gap-x-2">
+                              <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                {quiz.questions.length} Questions
+                              </p>
+                              {/* <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Submitted: 2
+                              </p> */}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
