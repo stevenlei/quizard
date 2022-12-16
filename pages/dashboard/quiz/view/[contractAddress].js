@@ -39,32 +39,17 @@ export default function Home() {
     try {
       const quizardContract = new ethers.Contract(contractAddress, QUIZARD_ABI.abi, provider);
 
-      quizardContract.getName().then((name) => {
+      quizardContract.getBrief().then(({ name, description, duration, passingScore, startTime, endTime }) => {
         setQuizName(name);
-      });
-
-      quizardContract.getDescription().then((description) => {
         setQuizDescription(description);
-      });
-
-      quizardContract.getDuration().then((duration) => {
         setQuizDuration(duration.toNumber());
-      });
-
-      quizardContract.getPassingScore().then((passingScore) => {
         setQuizPassingScore(passingScore.toNumber());
-      });
-
-      quizardContract.getStartTime().then((startTime) => {
         setQuizStartTime(startTime.toNumber());
-      });
-
-      quizardContract.getEndTime().then((endTime) => {
         setQuizEndTime(endTime.toNumber());
       });
 
-      quizardContract.getQuestions().then((questions) => {
-        setQuestions(questions);
+      quizardContract.getQuestions().then((questionsData) => {
+        setQuestions(questionsData);
       });
     } catch (err) {
       console.error(err);

@@ -39,15 +39,17 @@ export default function Home() {
       if (quizardAddresses.length > 0) {
         for (let i = 0; i < quizardAddresses.length; i++) {
           const quizardContract = new ethers.Contract(quizardAddresses[i], QUIZARD_ABI.abi, provider);
-          const name = await quizardContract.getName();
-          const questions = await quizardContract.getQuestions();
+          const brief = await quizardContract.getBrief();
+          const questionsData = await quizardContract.getQuestions();
 
           setQuizzes((prev) => [
             ...prev,
             {
               address: quizardAddresses[i],
-              name: name,
-              questions: questions,
+              name: brief.name,
+              passingScore: brief.passingScore.toNumber(),
+              attendees: brief.attendees.toNumber(),
+              questions: questionsData,
             },
           ]);
         }
@@ -136,9 +138,12 @@ export default function Home() {
                               <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                 {quiz.questions.length} Questions
                               </p>
-                              {/* <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                Submitted: 2
-                              </p> */}
+                              <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Passing Score: {quiz.passingScore}
+                              </p>
+                              <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Submitted: {quiz.attendees}
+                              </p>
                             </div>
                           </div>
                         </div>
