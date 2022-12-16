@@ -1,8 +1,21 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount, useDisconnect } from "wagmi";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const { isConnected, address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.isReady && !isConnected) {
+      // Redirect to homepage
+      router.push("/");
+    }
+  }, [isConnected, router.isReady]);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Head>
@@ -36,7 +49,7 @@ export default function Home() {
             <li className="text-2xl text-gray-800">Created Quizzes</li>
             <li className="text-2xl">
               <Link
-                className="bg-gray-100 shadow hover:bg-gray-200 rounded-full inline-block py-2 px-6 text-lg"
+                className="bg-blue-700 shadow hover:bg-blue-800 text-white rounded-full inline-block py-2 px-6 text-lg"
                 href="/dashboard/quiz/create"
               >
                 Create New Quiz
@@ -57,7 +70,7 @@ export default function Home() {
                             3 Questions
                           </p>
                           <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Passing Score: 60%
+                            Passing Score: 60
                           </p>
                           <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                             Submitted: 2
@@ -77,7 +90,7 @@ export default function Home() {
                             3 Questions
                           </p>
                           <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Passing Score: 60%
+                            Passing Score: 60
                           </p>
                           <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                             Submitted: 2
@@ -97,7 +110,7 @@ export default function Home() {
                             3 Questions
                           </p>
                           <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Passing Score: 60%
+                            Passing Score: 60
                           </p>
                           <p className="px-3 py-1 inline-flex leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                             Submitted: 2

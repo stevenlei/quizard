@@ -2,7 +2,14 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 
+import { useWeb3Modal } from "@web3modal/react";
+import { useAccount, useDisconnect } from "wagmi";
+
 export default function Home() {
+  const { isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { open } = useWeb3Modal();
+
   const [walletAddress, setWalletAddress] = useState(null);
 
   return (
@@ -18,14 +25,17 @@ export default function Home() {
           <div className="px-4 py-4 max-w-7xl mx-auto flex justify-between items-center">
             <h1 className="text-white text-3xl font-bold">Quizard</h1>
             <ul className="flex">
-              {!walletAddress && (
+              {!isConnected && (
                 <li>
-                  <button className="bg-yellow-400 hover:bg-yellow-500 rounded-full inline-block py-2 px-6 text-lg">
+                  <button
+                    onClick={() => open()}
+                    className="bg-yellow-400 hover:bg-yellow-500 rounded-full inline-block py-2 px-6 text-lg"
+                  >
                     Connect with Wallet
                   </button>
                 </li>
               )}
-              {walletAddress && (
+              {isConnected && (
                 <li>
                   <Link
                     href="/dashboard"
@@ -33,6 +43,16 @@ export default function Home() {
                   >
                     Dashboard
                   </Link>
+                </li>
+              )}
+              {isConnected && (
+                <li>
+                  <button
+                    onClick={() => disconnect()}
+                    className="ml-4 bg-gray-700 hover:bg-gray-600 text-gray-400 rounded-full inline-block py-2 px-6 text-lg"
+                  >
+                    Disconnect
+                  </button>
                 </li>
               )}
             </ul>
