@@ -10,8 +10,6 @@ export default function Home() {
   const { disconnect } = useDisconnect();
   const { open } = useWeb3Modal();
 
-  const [walletAddress, setWalletAddress] = useState(null);
-
   return (
     <div className="min-h-screen bg-slate-50">
       <Head>
