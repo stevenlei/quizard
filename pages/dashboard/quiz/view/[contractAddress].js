@@ -104,6 +104,7 @@ export default function Home() {
         <p className="text-center text-gray-600">Contract Address: {contractAddress}</p>
         <div className="text-center mt-4">
           <a
+            rel="noreferrer"
             href={`/quiz/${contractAddress}`}
             target="_blank"
             className="bg-blue-700 hover:bg-blue-800 flex justify-center items-center text-white rounded-full inline-flex py-2 px-6 text-md"

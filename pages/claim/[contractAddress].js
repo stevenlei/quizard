@@ -173,6 +173,7 @@ export default function Home() {
 
                 {tokenId && (
                   <a
+                    rel="noreferrer"
                     target="_blank"
                     href={`https://testnets.opensea.io/assets/${process.env.NEXT_PUBLIC_QUIZARD_NFT_ADDRESS}/${tokenId}`}
                     className=" bg-blue-700 hover:bg-blue-800 text-white justify-center items-center rounded-full inline-flex py-2 px-6 text-lg"
