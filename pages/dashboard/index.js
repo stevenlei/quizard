@@ -22,7 +22,6 @@ export default function Home() {
       router.push("/");
     } else if (router.isReady && isConnected) {
       init();
-      console.log("init");
     }
   }, [isConnected, router.isReady]);
 
