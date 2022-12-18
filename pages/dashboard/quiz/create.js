@@ -61,7 +61,7 @@ export default function Home() {
       endTime: new Date(quizEndTime).getTime() / 1000,
       duration: +quizDuration,
       passingScore: +quizPassingScore,
-      questions: [...questions].map((q) => {
+      questions: JSON.parse(JSON.stringify(questions)).map((q) => {
         const correctAnswer = q.options[q.answer];
 
         // shuffle the answers
