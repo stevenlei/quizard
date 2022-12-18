@@ -29,13 +29,13 @@ export default function Home() {
   const [questions, setQuestions] = useState([
     {
       question: "What is the capital of India?",
-      options: ["Mumbai", "Delhi", "Kolkata", "Chennai"],
-      answer: 1,
+      options: ["Delhi", "Mumbai", "Kolkata", "Chennai"],
+      answer: 0,
     },
     {
       question: "What is the capital of USA?",
-      options: ["New York", "Washington DC", "Los Angeles", "Chicago"],
-      answer: 1,
+      options: ["Washington DC", "New York", "Los Angeles", "Chicago"],
+      answer: 0,
     },
     {
       question: "What is the capital of China?",
@@ -61,7 +61,7 @@ export default function Home() {
       endTime: new Date(quizEndTime).getTime() / 1000,
       duration: +quizDuration,
       passingScore: +quizPassingScore,
-      questions: questions.map((q) => {
+      questions: [...questions].map((q) => {
         const correctAnswer = q.options[q.answer];
 
         // shuffle the answers
@@ -196,7 +196,9 @@ export default function Home() {
                               newQuestions[questionIndex].options[answerIndex] = e.target.value;
                               setQuestions(newQuestions);
                             }}
-                            className="w-full border border-gray-300 rounded-lg p-2 mt-1 outline-none focus:border-yellow-500"
+                            className={`${
+                              answerIndex === 0 ? "bg-green-200 " : ""
+                            }w-full border border-gray-300 rounded-lg p-2 mt-1 outline-none focus:border-yellow-500`}
                           />
                         ))}
                       </div>
